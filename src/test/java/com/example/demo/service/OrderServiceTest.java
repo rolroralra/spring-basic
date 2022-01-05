@@ -1,11 +1,11 @@
 package com.example.demo.service;
 
+import com.example.demo.config.AppConfig;
 import com.example.demo.model.Grade;
 import com.example.demo.model.Member;
 import com.example.demo.model.Order;
-import com.example.demo.service.impl.MemberServiceImpl;
-import com.example.demo.service.impl.OrderServiceImpl;
 import com.example.demo.strategy.discount.impl.FixDiscountPolicy;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -16,8 +16,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OrderServiceTest {
-    MemberService memberService = new MemberServiceImpl();
-    OrderService orderService = new OrderServiceImpl();
+    MemberService memberService;
+    OrderService orderService;
+
+    @BeforeEach
+    void beforeEach() {
+        AppConfig appConfig = new AppConfig();
+        memberService = appConfig.memberService();
+        orderService = appConfig.orderService();
+    }
 
     @org.junit.jupiter.api.Order(1)
     @DisplayName("Test createOrder by VIP member")

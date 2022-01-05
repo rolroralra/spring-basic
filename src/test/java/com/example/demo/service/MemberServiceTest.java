@@ -1,12 +1,9 @@
 package com.example.demo.service;
 
+import com.example.demo.config.AppConfig;
 import com.example.demo.model.Grade;
 import com.example.demo.model.Member;
-import com.example.demo.service.impl.MemberServiceImpl;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -20,7 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MemberServiceTest {
-    private final MemberService memberService = new MemberServiceImpl();
+    private MemberService memberService;
+
+    @BeforeEach
+    void beforeEach() {
+        AppConfig appConfig = new AppConfig();
+        memberService = appConfig.memberService();
+    }
 
     @Order(1)
     @DisplayName("Test join")
