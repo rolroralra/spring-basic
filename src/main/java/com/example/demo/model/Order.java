@@ -9,8 +9,11 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Getter
 public class Order {
     private Long memberId;
+
     private String itemName;
+
     private Integer itemPrice;
+
     private Integer discountPrice;
 
     public String toString() {

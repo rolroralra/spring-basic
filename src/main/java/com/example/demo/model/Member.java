@@ -9,7 +9,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Getter
 public class Member {
     private Long id;
+
     private String name;
+
     private Grade grade;
 
     @Override
