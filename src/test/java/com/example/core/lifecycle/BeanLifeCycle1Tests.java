@@ -6,6 +6,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 
 class BeanLifeCycle1Tests {
+
     static class LifeCycleConfig {
 
         @Bean
