@@ -2,7 +2,9 @@ package com.example.demo.strategy.discount.impl;
 
 import com.example.demo.model.Member;
 import com.example.demo.strategy.discount.DiscountPolicy;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FixDiscountPolicy implements DiscountPolicy {
     public final static int DISCOUNT_FIX_AMOUNT = 1000;
 

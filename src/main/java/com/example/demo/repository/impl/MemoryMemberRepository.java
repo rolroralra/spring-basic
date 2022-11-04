@@ -5,7 +5,9 @@ import com.example.demo.repository.MemberRepository;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MemoryMemberRepository implements MemberRepository {
     private static final ConcurrentMap<Long, Member> storage = new ConcurrentHashMap<>();
 
