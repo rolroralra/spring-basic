@@ -5,12 +5,12 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-class BeanLifeCycleTest {
+class BeanLifeCycle3Tests {
     static class LifeCycleConfig {
 
         @Bean
-        public NetworkClient networkClient() {
-            NetworkClient networkClient = new NetworkClient();
+        public NetworkClient3 networkClient() {
+            NetworkClient3 networkClient = new NetworkClient3();
             networkClient.setUrl("http://hello-spring.dev");
             return networkClient;
         }
@@ -21,7 +21,9 @@ class BeanLifeCycleTest {
         ConfigurableApplicationContext applicationContext
             = new AnnotationConfigApplicationContext(LifeCycleConfig.class);
 
-        NetworkClient networkClient = applicationContext.getBean(NetworkClient.class);
+        NetworkClient3 networkClient = applicationContext.getBean(NetworkClient3.class);
         applicationContext.close();
+
+        System.out.println(networkClient.getUrl());
     }
 }

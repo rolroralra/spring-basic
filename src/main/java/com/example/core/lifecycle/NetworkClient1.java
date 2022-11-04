@@ -5,13 +5,13 @@ import lombok.Setter;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-public class NetworkClient implements InitializingBean, DisposableBean {
+public class NetworkClient1 implements InitializingBean, DisposableBean {
 
     @Getter
     @Setter
     private String url;
 
-    public NetworkClient() {
+    public NetworkClient1() {
         System.out.println("생성자 호출, url = " + url);
     }
 
@@ -34,12 +34,14 @@ public class NetworkClient implements InitializingBean, DisposableBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        System.out.println(this.getClass().getSimpleName() + ": init");
         connect();
         call("초기화 연결 메시지");
     }
 
     @Override
     public void destroy() throws Exception {
+        System.out.println(this.getClass().getSimpleName() + ": close");
         disconnect();
     }
 

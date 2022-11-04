@@ -29,7 +29,7 @@ class OrderServiceTest {
     @org.junit.jupiter.api.Order(1)
     @DisplayName("Test createOrder by VIP member")
     @ParameterizedTest
-    @MethodSource("com.example.demo.service.MemberServiceTest#provideVipMember")
+    @MethodSource("com.example.core.service.MemberServiceTest#provideVipMember")
     void createOrderByVipMember(Member vipMember) {
         // Given
         assertThat(vipMember).isNotNull()
@@ -47,7 +47,7 @@ class OrderServiceTest {
     @org.junit.jupiter.api.Order(2)
     @DisplayName("Test createOrder by basic member")
     @ParameterizedTest
-    @MethodSource("com.example.demo.service.MemberServiceTest#provideBasicMember")
+    @MethodSource("com.example.core.service.MemberServiceTest#provideBasicMember")
     void createOrderByBasicMember(Member basicMember) {
         // Given
         assertThat(basicMember).isNotNull()
