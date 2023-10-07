@@ -27,11 +27,15 @@ class AutoAppConfigTests {
         assertThat(orderService).isNotNull();
         assertThat(memberRepository).isNotNull();
 
-        assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
-        assertThat(((MemberServiceImpl)memberService).getMemberRepository()).isEqualTo(memberRepository);
+        assertThat(memberService)
+            .isInstanceOf(MemberServiceImpl.class);
+        assertThat(((MemberServiceImpl)memberService).getMemberRepository())
+            .isEqualTo(memberRepository);
 
-        assertThat(orderService).isInstanceOf(OrderServiceImpl.class);
-        assertThat(((OrderServiceImpl)orderService).getMemberRepository()).isEqualTo(memberRepository);
+        assertThat(orderService)
+            .isInstanceOf(OrderServiceImpl.class);
+        assertThat(((OrderServiceImpl)orderService).getMemberRepository())
+            .isEqualTo(memberRepository);
 
         System.out.println("memberService = " + memberService);
         System.out.println("orderService = " + orderService);

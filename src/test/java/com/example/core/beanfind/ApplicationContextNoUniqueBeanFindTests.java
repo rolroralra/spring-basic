@@ -1,4 +1,4 @@
-package com.example.core;
+package com.example.core.beanfind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-public class ApplicationContextNoUniqueBeanFindTests {
+class ApplicationContextNoUniqueBeanFindTests {
 
     @Configuration
     static class NoUniqueBeanConfig {
@@ -44,8 +44,9 @@ public class ApplicationContextNoUniqueBeanFindTests {
         MemberRepository bean
             = applicationContext.getBean("memberRepository2", MemberRepository.class);
 
-        assertThat(bean).isInstanceOf(MemberRepository.class);
-        assertThat(bean).isInstanceOf(MemoryMemberRepository.class);
+        assertThat(bean)
+            .isInstanceOf(MemberRepository.class)
+            .isInstanceOf(MemoryMemberRepository.class);
     }
 
     @Test

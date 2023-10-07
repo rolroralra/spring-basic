@@ -1,4 +1,4 @@
-package com.example.core;
+package com.example.core.beanfind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -16,7 +16,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-public class ApplicationContextExtendsBeanFindTests {
+class ApplicationContextExtendsBeanFindTests {
 
     @Configuration
     static class ExtendsBeanConfig {
@@ -48,8 +48,9 @@ public class ApplicationContextExtendsBeanFindTests {
         DiscountPolicy bean
             = applicationContext.getBean("fixDiscountPolicy", DiscountPolicy.class);
 
-        assertThat(bean).isInstanceOf(DiscountPolicy.class);
-        assertThat(bean).isInstanceOf(FixDiscountPolicy.class);
+        assertThat(bean)
+            .isInstanceOf(DiscountPolicy.class)
+            .isInstanceOf(FixDiscountPolicy.class);
     }
 
     @Test
@@ -57,8 +58,9 @@ public class ApplicationContextExtendsBeanFindTests {
     void findBeanBySubType() {
         RateDiscountPolicy bean = applicationContext.getBean(RateDiscountPolicy.class);
 
-        assertThat(bean).isInstanceOf(DiscountPolicy.class);
-        assertThat(bean).isInstanceOf(RateDiscountPolicy.class);
+        assertThat(bean)
+            .isInstanceOf(DiscountPolicy.class)
+            .isInstanceOf(RateDiscountPolicy.class);
     }
 
     @Test

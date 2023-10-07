@@ -1,4 +1,4 @@
-package com.example.core;
+package com.example.core.beanfind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -9,10 +9,11 @@ import com.example.core.service.impl.MemberServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-public class ApplicationContextBeanFindTests {
+class ApplicationContextBeanFindTests {
 
     private final ApplicationContext applicationContext
         = new AnnotationConfigApplicationContext(AppConfig.class);
@@ -22,8 +23,9 @@ public class ApplicationContextBeanFindTests {
     void findBeanByName() {
         Object memberService = applicationContext.getBean("memberService");
 
-        assertThat(memberService).isInstanceOf(MemberService.class);
-        assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
+        assertThat(memberService)
+            .isInstanceOf(MemberService.class)
+            .isInstanceOf(MemberServiceImpl.class);
     }
 
     @Test
@@ -32,8 +34,9 @@ public class ApplicationContextBeanFindTests {
         MemberService memberService
             = applicationContext.getBean("memberService", MemberService.class);
 
-        assertThat(memberService).isInstanceOf(MemberService.class);
-        assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
+        assertThat(memberService)
+            .isInstanceOf(MemberService.class)
+            .isInstanceOf(MemberServiceImpl.class);
     }
 
     @Test
@@ -42,8 +45,9 @@ public class ApplicationContextBeanFindTests {
         MemberService memberService
             = applicationContext.getBean(MemberService.class);
 
-        assertThat(memberService).isInstanceOf(MemberService.class);
-        assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
+        assertThat(memberService)
+            .isInstanceOf(MemberService.class)
+            .isInstanceOf(MemberServiceImpl.class);
     }
 
     @Test
