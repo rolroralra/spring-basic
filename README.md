@@ -8,6 +8,7 @@
 - [Bean 자동 등록 (@Component) vs 수동 등록 (@Bean)](#bean-자동-등록-component-vs-수동-등록-bean)
 - [Spring Bean 생명주기와 콜백](#spring-bean-생명주기와-콜백)
 - [Bean Scope](#bean-scope)
+- [Web Scope](#web-scope)
 - [Reference](#reference)
 
 ---
@@ -815,6 +816,7 @@ public enum ScopedProxyMode {
   - 테스트 코드를 작성하기 어렵다.
 
 #### 코드 예시
+
 <details>
   <summary>코드 예시</summary>
   <p>
