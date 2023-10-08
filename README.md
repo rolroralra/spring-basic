@@ -1,3 +1,16 @@
+# 목차
+- [ApplicationContext](#applicationcontext)
+- [Spring Container 생성 과정](#spring-container-생성-과정)
+- [Spring Container에 등록된 모든 Bean 조회](#spring-container에-등록된-모든-bean-조회)
+- [Spring Container 와 Singleton Bean](#spring-container-와-singleton-bean)
+- [@ComponentScan 과 의존관계 자동 주입](#componentscan-과-의존관계-자동-주입)
+- [@Autowired 시, 동일한 타입의 Bean이 2개 이상인 경우](#autowired-시-동일한-타입의-bean이-2개-이상인-경우)
+- [Bean 자동 등록 (@Component) vs 수동 등록 (@Bean)](#bean-자동-등록-component-vs-수동-등록-bean)
+- [Spring Bean 생명주기와 콜백](#spring-bean-생명주기와-콜백)
+- [Bean Scope](#bean-scope)
+- [Reference](#reference)
+
+---
 # ApplicationContext
 - Spring Container 인터페이스
 - 구현체 예시 목록
@@ -54,7 +67,7 @@ public interface ApplicationContext extends EnvironmentCapable, ListableBeanFact
 
 # Spring Container에 등록된 모든 Bean 조회
 - `ApplicationContext::getBeanDefinitionNames()` : 등록된 모든 Bean 이름 조회
-- [코드 예시](./src/test/java/com/example/core/beanfind/ApplicationContextInfoTests.java)
+- [코드 예시](https://github.com/rolroralra/spring-basic/blob/master/src/test/java/com/example/core/beanfind/ApplicationContextInfoTests.java)
 
 ```java
 class ApplicationContextTests {
@@ -83,25 +96,25 @@ class ApplicationContextTests {
 - `ApplicationContext::getBean(beanName)`
 - 해당 이름으로 등록된 Bean이 없는 경우
   - `NoSuchBeanDefinitionException` 예외 발생
-- [코드 예시](./src/test/java/com/example/core/beanfind/ApplicationContextBeanFindTests.java)
+- [코드 예시](https://github.com/rolroralra/spring-basic/blob/master/src/test/java/com/example/core/beanfind/ApplicationContextBeanFindTests.java)
 
 ### Bean 이름, Bean 타입으로 조회
 - `ApplicationContext::getBean(beanName, beanType)`
-- [코드 예시](./src/test/java/com/example/core/beanfind/ApplicationContextBeanFindTests.java)
+- [코드 예시](https://github.com/rolroralra/spring-basic/blob/master/src/test/java/com/example/core/beanfind/ApplicationContextBeanFindTests.java)
 
 ### Bean 타입으로 조회
 - `ApplicationContext::getBean(beanType)`
   - 같은 타입의 Bean이 2개 이상 등록된 경우
     - `NoUniqueBeanDefinitionException` 예외 발생
-- [코드 예시](./src/test/java/com/example/core/beanfind/ApplicationContextBeanFindTests.java)
+- [코드 예시](https://github.com/rolroralra/spring-basic/blob/master/src/test/java/com/example/core/beanfind/ApplicationContextBeanFindTests.java)
 
 ### 동일한 타입 둘 이상의 Bean 조회
 - `ApplicationContext::getBeansOfType(beanType)` : `Map<String, T>`
-- [코드 예시](./src/test/java/com/example/core/beanfind/ApplicationContextNoUniqueBeanFindTests.java)
+- [코드 예시](https://github.com/rolroralra/spring-basic/blob/master/src/test/java/com/example/core/beanfind/ApplicationContextNoUniqueBeanFindTests.java)
 
 ### Spring Bean 조회 - 상속관계
 - 부모 타입으로 조회하면, 자식 타입도 함께 조회한다.
-- [코드 예시](./src/test/java/com/example/core/beanfind/ApplicationContextExtendsBeanFindTests.java)
+- [코드 예시](https://github.com/rolroralra/spring-basic/blob/master/src/test/java/com/example/core/beanfind/ApplicationContextExtendsBeanFindTests.java)
 
 ## BeanDefinition
 - Bean의 메타데이터 정보를 담고 있는 인터페이스
@@ -313,6 +326,7 @@ public interface TypeFilter {
   - `Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true`
 - `spring.main.allow-bean-definition-overriding=true` 설정을 통해 오류를 해결할 수 있다.
 
+---
 # 의존관계 자동 주입 (Dependency Injection)
 > 의존관계 주입에는 크게 4가지 방법이 있다.
 
@@ -518,6 +532,642 @@ public class DiscountService {
   - `@Configuration`, `@Bean`
   - 자동 등록을 사용할 경우, 특정 패키지에 모아두는 것이 좋다.
 
+---
+# Spring Bean 생명주기와 콜백 
+> Spring Bean은 생성되고, 의존관계 주입이 완료된 후, 초기화 콜백 메서드가 호출된다.
+> 
+> 그리고, 사용이 끝나면 소멸 전 콜백 메서드가 호출된다.
 
+## Spring Bean Lifecycle
+1. Spring Container 생성
+2. **객체 생성**
+3. **의존관계 주입**
+4. 초기화 콜백
+5. 사용
+6. 소멸전 콜백
+7. 객체 소멸
+8. Spring Container 종료
+
+## Spring Bean Lifecycle Callback
+- 초기화 Callback
+  - Bean 객체가 생성되고, Bean의 의존관계가 주입이 완료된 후 호출
+- 소멸전 Callback
+  - Bean 객체가 소멸되기 직전에 호출
+  
+### InitializingBean, DisposableBean
+- `InitializingBean::afterPropertiesSet()` 메서드를 통해 초기화 콜백을 제공한다.
+- `DisposableBean::destroy()` 메서드를 통해 소멸전 콜백을 제공한다.
+- 단점
+  - **_Spring 전용 인터페이스이므로, Spring Framework에 의존한다._**
+  - **외부 라이브러리에 적용할 수 없다.**
+
+```java
+public interface InitializingBean {
+	void afterPropertiesSet() throws Exception;
+}
+
+public interface DisposableBean {
+  void destroy() throws Exception;
+}
+```
+
+<details>
+  <summary>코드 예시</summary>
+  <p>
+
+```java
+@Getter
+public class NetworkClient1 implements InitializingBean, DisposableBean {
+
+    @Setter
+    private String url;
+
+    public NetworkClient1() {
+        System.out.println("생성자 호출, url = " + url);
+    }
+
+    /**
+     * 서비스 시작시 호출
+     */
+    public void connect() {
+        System.out.println("connect: " + url);
+    }
+    public void call(String message) {
+        System.out.println("call: " + url + ", message = " + message);
+    }
+
+    /**
+     * 서비스 종료시 호출
+     */
+    public void disconnect() {
+        System.out.println("close: " + url);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        System.out.println(this.getClass().getSimpleName() + ": init");
+        connect();
+        call("초기화 연결 메시지");
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        System.out.println(this.getClass().getSimpleName() + ": close");
+        disconnect();
+    }
+
+}
+```
+
+  </p>
+</details>
+
+### @Bean(initMethod = "init", destroyMethod = "close")
+- `@Bean` 어노테이션을 사용하여 초기화 콜백, 소멸전 콜백 메서드를 지정할 수 있다.
+- `destroyMethod` 기본값: `(inferred)`
+  - **종료 메서드 이름을 지정하지 않으면, `close`, `shutdown` 메서드를 자동으로 호출한다.**
+  - 종료 메서드를 추론해서, 호출할 종료 메서드를 자동으로 선택한다.
+  - 추론 기능을 사용하지 않으려면, `destroyMethod = ""` 를 설정한다.
+- 장점
+  - **_외부 라이브러리에도 적용할 수 있다._**
+
+```java
+@Bean(initMethod = "init", destroyMethod = "close")
+public NetworkClient2 networkClient() {
+    NetworkClient2 networkClient = new NetworkClient2();
+    networkClient.setUrl("http://hello-spring.dev");
+    return networkClient;
+}
+```
+
+### @PostConstruct, @PreDestroy
+- `@PostConstruct` 
+  - 어노테이션을 사용하여 **초기화 콜백 메서드를 지정할 수 있다.**
+  - `javax.annotation.PostConstruct`
+- `@PreDestroy` 
+  - 어노테이션을 사용하여 **소멸전 콜백 메서드를 지정할 수 있다.**
+  - `javax.annotation.PreDestroy`
+- 장점
+  - `JSR-250` Java 표준이다.
+  - Spring에서 가장 권장하는 방법
+- 단점
+  - **_외부 라이브러리에 적용할 수 없다._**
+
+<details>
+  <summary>코드 예시</summary>
+  <p>
+
+```java
+@Getter
+public class NetworkClient3 {
+
+    @Setter
+    private String url;
+
+    public NetworkClient3() {
+        System.out.println("생성자 호출, url = " + url);
+    }
+
+    /**
+     * 서비스 시작시 호출
+     */
+    public void connect() {
+        System.out.println("connect: " + url);
+    }
+    public void call(String message) {
+        System.out.println("call: " + url + ", message = " + message);
+    }
+
+    /**
+     * 서비스 종료시 호출
+     */
+    public void disconnect() {
+        System.out.println("close: " + url);
+    }
+
+    @PostConstruct
+    public void init() {
+        System.out.println(this.getClass().getSimpleName() + ": init");
+        connect();
+        call("초기화 연결 메시지");
+    }
+
+    @PreDestroy
+    public void close() {
+        System.out.println(this.getClass().getSimpleName() + ": close");
+        disconnect();
+    }
+}
+```
+
+  </p>
+</details>
+
+---
+# Bean Scope
+> Spring Bean이 존재할 수 있는 범위를 뜻한다.
+
+- Spring은 기본적으로 모든 Bean을 Singleton으로 관리한다.
+- Spring은 다음과 같은 Bean Scope를 지원한다.
+  - `SCOPE_SINGLETON` : 기본값. `"singleton"`
+  - `SCOPE_PROTOTYPE` : `"prototype"`
+  - `SCOPE_REQUEST` : Web Request 당 하나의 Bean을 생성한다. `"request"`
+  - `SCOPE_SESSION` : Web Session 당 하나의 Bean을 생성한다. `"session"`
+  - `SCOPE_APPLICATION` : Web의 ServletContext와 같은 범위로 유지되는 Scope. `"application"`
+
+## Bean Scope 설정 방법
+- `@Scope` 어노테이션 설정
+
+```java
+@Scope("prototype")
+@Component
+public class PrototypeBean {
+}
+```
+
+```java
+import java.beans.BeanProperty;
+
+@Scope("prototype")
+@Bean
+public PrototypeBean prototypeBean() {
+    return new PrototypeBean();
+}
+```
+
+### 참고: @Scope, ScopedProxyMode
+```java
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Scope {
+
+	@AliasFor("scopeName")
+	String value() default "";
+
+	/**
+	 * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#SCOPE_PROTOTYPE
+	 * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#SCOPE_SINGLETON
+	 * @see org.springframework.web.context.WebApplicationContext#SCOPE_REQUEST
+	 * @see org.springframework.web.context.WebApplicationContext#SCOPE_SESSION
+	 */
+	@AliasFor("value")
+	String scopeName() default "";
+
+	ScopedProxyMode proxyMode() default ScopedProxyMode.DEFAULT;
+}
+```
+
+```java
+public enum ScopedProxyMode {
+
+	DEFAULT,
+  
+	NO,
+
+	/**
+	 * JDK dynamic proxy 
+	 */
+	INTERFACES,
+
+	/**
+	 * Create a class-based proxy (uses CGLIB).
+	 */
+	TARGET_CLASS
+}
+```
+
+## Prototype Scope
+> Spring Container에 요청할 때 마다 새로운 Bean을 생성한다.
+> 
+> Spring Container는 Prototype Scope Bean을 생성하고 의존관계를 주입하고 초기화 메서드 실행까지만 관여한다.
+> 
+> 종료 메서드가 호출되지 않는다.
+
+- Prototype Scope Bean은 Spring Container가 생성하고 의존관계 주입까지만 관여한다. 그 이후는 관리하지 않는다.
+  - **Spring Container에 요청할 때마다 새로운 Prototype Scope Bean을 생성하고 의존관계를 주입시켜준다.**
+  - **Spring Container는 생성되고 의존관계를 주입시키고 반환해준 Prototype Scope Bean을 관리하지 않는다.**
+- Spring Container에서 Bean을 조회할 때, 새로운 Bean을 생성하고 의존관계를 주입하고 초기화 메서드를 수행해서 반환한다.
+- 사용자가 직접 Prototype Scope Bean을 관리해야 한다.
+- `@PreDestory` 같은 종료 메서드가 호출되지 않는다.
+
+
+![prototype-scope-bean-1.png](docs/prototype-scope-bean-1.png)
+![prototype-scope-bean-2.png](docs/prototype-scope-bean-2.png)
+
+## Singleton Scope Bean과 Prototype Scope Bean 함께 사용시 문제점
+- Singleton Scope Bean에서 Prototype Scope Bean을 의존한다고 가정하자.
+- **_Prototype Scope Bean을 사용할 때마다 새로 생성되는 것이 아니다!_**
+- Singleton Scope Bean이 생성되고 의존관계를 주입할 때, Prototype Scope Bean이 Spring Container에 의해 새로 생성되고 주입된다.
+
+[예시 코드](https://github.com/rolroralra/spring-basic/blob/master/src/test/java/com/example/core/scope/SingletonWithPrototypeTests.java)
+
+### 해결 방법 : Dependency Lookup
+1. ApplicationContext
+2. ObjectProvider<T>, ObjectFactory<T>
+3. JSR-330 Provider<T>
+
+### 1. ApplicationContext
+- `ApplicationContext::getBean` 메서드를 사용하여 Prototype Scope Bean을 조회한다.
+  - Dependency Lookup(DL)
+- 단점
+  - Spring Framework에 의존한다.
+  - 테스트 코드를 작성하기 어렵다.
+
+#### 코드 예시
+<details>
+  <summary>코드 예시</summary>
+  <p>
+
+```java
+@RequiredArgsConstructor
+static class SingletonBean {
+
+    private final ApplicationContext applicationContext;
+
+    public int logic() {
+        PrototypeBean prototypeBean = applicationContext.getBean(PrototypeBean.class);
+        prototypeBean.addCount();
+        return prototypeBean.getCount();
+    }
+}
+
+@Getter
+@Scope("prototype")
+static class PrototypeBean {
+
+    private int count = 0;
+
+    public void addCount() {
+        count++;
+    }
+
+    @PostConstruct
+    public void init() {
+        System.out.println(this.getClass().getSimpleName() + " init... " + this);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        System.out.println(this.getClass().getSimpleName() + " destroy");
+    }
+}
+```
+
+  </p>
+</details>
+
+### 2. ObjectProvider<T>, ObjectFactory<T>
+- Spring Container에서 Bean을 찾아주는 대신 Dependency Lookup 서비스를 제공하는 인터페이스
+- `ObjectProvider<T>` : `ObjectFactory<T>`를 상속하고 편리한 기능들을 추가 제공한다.
+- Spring Framework에 의존하긴 하지만, 그나마 mocking 하기 쉽다.
+- 단점
+  - 여전히 Spring Framework에 의존한다.
+
+```java
+@FunctionalInterface
+public interface ObjectFactory<T> {
+	T getObject() throws BeansException;
+}
+```
+
+```java
+public interface ObjectProvider<T> extends ObjectFactory<T>, Iterable<T> {
+  
+  T getObject(Object... args) throws BeansException;
+
+  @Nullable
+  T getIfAvailable() throws BeansException;
+
+  default T getIfAvailable(Supplier<T> defaultSupplier) throws BeansException {
+    T dependency = getIfAvailable();
+    return (dependency != null ? dependency : defaultSupplier.get());
+  }
+
+  default void ifAvailable(Consumer<T> dependencyConsumer) throws BeansException {
+    T dependency = getIfAvailable();
+    if (dependency != null) {
+      dependencyConsumer.accept(dependency);
+    }
+  }
+
+  @Nullable
+  T getIfUnique() throws BeansException;
+
+  default T getIfUnique(Supplier<T> defaultSupplier) throws BeansException {
+    T dependency = getIfUnique();
+    return (dependency != null ? dependency : defaultSupplier.get());
+  }
+
+  default void ifUnique(Consumer<T> dependencyConsumer) throws BeansException {
+    T dependency = getIfUnique();
+    if (dependency != null) {
+      dependencyConsumer.accept(dependency);
+    }
+  }
+
+  @Override
+  default Iterator<T> iterator() {
+    return stream().iterator();
+  }
+
+  default Stream<T> stream() {
+    throw new UnsupportedOperationException("Multi element access not supported");
+  }
+
+  default Stream<T> orderedStream() {
+    throw new UnsupportedOperationException("Ordered element access not supported");
+  }
+}
+```
+
+#### 코드 예시
+<details>
+  <summary>코드 예시</summary>
+  <p>
+
+```java
+@RequiredArgsConstructor
+static class SingletonBean {
+
+  private final ObjectProvider<PrototypeBean> objectProvider;
+
+  public int logic() {
+    PrototypeBean prototypeBean = objectProvider.getObject();
+    prototypeBean.addCount();
+    return prototypeBean.getCount();
+  }
+}
+
+@Scope("prototype")
+static class PrototypeBean {
+
+  @Getter
+  private int count = 0;
+
+  public void addCount() {
+    count++;
+  }
+
+  @PostConstruct
+  public void init() {
+    System.out.println(this.getClass().getSimpleName() + " init... " + this);
+  }
+
+  @PreDestroy
+  public void destroy() {
+    System.out.println(this.getClass().getSimpleName() + " destroy");
+  }
+}
+```
+
+  </p>
+</details>
+
+### 3. JSR-330 Provider<T>
+- JSR-330 자바 표준을 사용하는 방법
+- `javax.inject:javax.inject:1` 라이브러리를 추가해야 한다.
+
+```java
+public interface Provider<T> {
+    T get();
+}
+```
+
+#### 코드 예시
+<details>
+  <summary>코드 예시</summary>
+  <p>
+
+```java
+@RequiredArgsConstructor
+static class SingletonBean {
+
+  private final Provider<PrototypeBean> provider;
+
+  public int logic() {
+    PrototypeBean prototypeBean = provider.get();
+    prototypeBean.addCount();
+    return prototypeBean.getCount();
+  }
+}
+
+@Getter
+@Scope("prototype")
+static class PrototypeBean {
+
+  private int count = 0;
+
+  public void addCount() {
+    count++;
+  }
+
+  @PostConstruct
+  public void init() {
+    System.out.println(this.getClass().getSimpleName() + " init... " + this);
+  }
+
+  @PreDestroy
+  public void destroy() {
+    System.out.println(this.getClass().getSimpleName() + " destroy");
+  }
+}
+```
+
+  </p>
+</details>
+
+## @Lookup  
+- Spring이 제공하는 `@Lookup`을 활용하여 Dependency Lookup 서비스를 사용할 수 있다.
+- [@Lookup Annotation in Spring](https://www.baeldung.com/spring-lookup)
+
+### @Lookup 예시 코드 1
+```java
+@RequiredArgsConstructor
+class SingletonBean {
+    @Lookup
+    public PrototypeBean getPrototypeBean() {
+        return null;
+    }
+}
+```
+
+### @Lookup 예시 코드 2
+- 내부 구현과는 상관없이, CGLIB를 통해 proxy 객체를 생성하여, `getPrototypeBean()` 메서드를 오버라이딩한다.
+
+```java
+@RequiredArgsConstructor
+class SingletonBean {
+    @Lookup
+    public PrototypeBean getPrototypeBean() {
+        return new PrototypeBean();
+    }
+}
+```
+
+### @Lookup 예시 코드 3
+- SpringFramework에서 자동으로 CGLIB를 통해 byte code를 조작하여, `getPrototypeBean()` 메서드를 오버라이딩한다.
+  - CGLIB를 통해 proxy 객체를 생성한다.
+```java
+@RequiredArgsConstructor
+abstract class SingletonBean {
+    @Lookup
+    public abstract PrototypeBean getPrototypeBean();
+}
+```
+
+# Web Scope
+- Web Scope는 Web 환경에서만 동작한다.
+- Web Scope는 Prototype과는 다르게 Spring이 해당 Scope의 종료시점까지 관리한다.
+  - `@PreDestroy` 같은 종료 메서드가 호출된다.
+
+## Web Scope 종류
+- `request` : HTTP 요청 하나가 들어오고 나갈 때 까지 유지되는 Scope, 각각의 HTTP 요청마다 별도의 Bean 인스턴스가 생성되고, 관리된다.
+- `session` : HTTP Session과 동일한 생명주기를 가지는 Scope
+- `application` : ServletContext와 동일한 생명주기를 가지는 Scope
+- `webSocket` : Web Socket과 동일한 생명주기를 가지는 Scope
+
+### Request Scope
+- HTTP 요청이 들어오기 전까지는 Bean을 생성하지 않는다.
+- Prototype Scope와 유사하게, Dependency Lookup을 통해 사용해야 한다.
+  - `ApplicationContext::getBean`
+  - `ObjectFactory<T>`, `ObjectProvider<T>`
+  - JSR-330 `Provider`
+  - `@Lookup` 어노테이션
+
+<details>
+  <summary>코드 예시</summary>
+  <p>
+
+```java
+@Component
+@Scope("request")
+@Slf4j
+public class MyLogger {
+
+    private String uuid;
+
+    @Setter
+    private String requestURL;
+
+    @PostConstruct
+    public void init() {
+        uuid = java.util.UUID.randomUUID().toString();
+        log.info("[{}] request scope bean create: {}", uuid, this);
+    }
+
+    @PreDestroy
+    public void close() {
+        log.info("[{}] request scope bean close: {}", uuid, this);
+    }
+
+    public void log(String message) {
+        log.info("[{}][{}] {}", uuid, requestURL, message);
+    }
+}
+
+@Service
+@RequiredArgsConstructor
+public class LogDemoService {
+  private final ObjectProvider<MyLogger> myLoggerProvider;
+
+  public void logic(String id) {
+    MyLogger myLogger = myLoggerProvider.getObject();
+
+    myLogger.log("service id = " + id);
+  }
+}
+```
+
+  </p>
+</details>
+
+### Request Scope와 Proxy
+- proxyMode를 설정하여, HTTP 요청이 들어오는 것과 상관없이 가짜 Proxy 클래스를 만들어서 주입할 수 있다.
+  - ObjectProvider를 사용하지 않아도 된다.
+- 적용 대상이 인터페이스가 아닌 클래스인 경우 
+  - `proxyMode = ScopedProxyMode.TARGET_CLASS` 옵션을 사용한다.
+  - CGLIB를 사용하여, 가짜 Proxy 클래스를 만들어서 주입한다.
+- 적용 대상이 인터페이스인 경우
+  - `proxyMode = ScopedProxyMode.INTERFACES` 옵션을 사용한다.
+  - JDK Dynamic Proxy를 사용하여, 가짜 Proxy 클래스를 만들어서 주입한다.
+
+```java
+@Component
+@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class MyLogger {
+    // ...
+}
+```
+
+![cglib_proxy.png](docs/cglib_proxy.png)
+
+<details>
+  <summary>코드 예시</summary>
+  <p>
+
+```java
+@Component
+@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Slf4j
+public class MyLogger {
+    // ...
+}
+
+@Service
+@RequiredArgsConstructor
+public class LogDemoService {
+  private final MyLogger myLogger;
+
+  public void logic(String id) {
+    myLogger.log("service id = " + id);
+  }
+}
+```
+
+  </p>
+</details>
+
+---
 # Reference
 [스프링-핵심-원리-기본편 (인프런)](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-%ED%95%B5%EC%8B%AC-%EC%9B%90%EB%A6%AC-%EA%B8%B0%EB%B3%B8%ED%8E%B8)

@@ -3,9 +3,9 @@ package com.example.core.lifecycle;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 public class NetworkClient2 {
 
-    @Getter
     @Setter
     private String url;
 

@@ -5,9 +5,9 @@ import javax.annotation.PreDestroy;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 public class NetworkClient3 {
 
-    @Getter
     @Setter
     private String url;
 
@@ -44,5 +44,4 @@ public class NetworkClient3 {
         System.out.println(this.getClass().getSimpleName() + ": close");
         disconnect();
     }
-
 }

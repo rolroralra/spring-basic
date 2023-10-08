@@ -18,7 +18,7 @@ class BeanLifeCycle1Tests {
     }
 
     @Test
-    public void lifeCycleTest() {
+    void lifeCycleTest() {
         ConfigurableApplicationContext applicationContext
             = new AnnotationConfigApplicationContext(LifeCycleConfig.class);
 

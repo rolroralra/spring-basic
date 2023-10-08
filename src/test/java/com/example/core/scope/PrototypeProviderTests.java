@@ -12,7 +12,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 
-public class PrototypeProviderTests {
+class PrototypeProviderTests {
 
     @RequiredArgsConstructor
     static class SingletonBean {
@@ -26,10 +26,10 @@ public class PrototypeProviderTests {
         }
     }
 
+    @Getter
     @Scope("prototype")
     static class PrototypeBean {
 
-        @Getter
         private int count = 0;
 
         public void addCount() {

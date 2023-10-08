@@ -5,9 +5,9 @@ import lombok.Setter;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+@Getter
 public class NetworkClient1 implements InitializingBean, DisposableBean {
 
-    @Getter
     @Setter
     private String url;
 
